@@ -1,0 +1,31 @@
+# Tu dong dong goi cad-bridge.exe tren Windows moi khi day code len nhanh main.
+# Chi chay khi push — khong chay tay (tranh tao release sai ten / thieu file).
+name: Build cad-bridge
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: pip install pyautocad comtypes pyinstaller
+
+      - name: Build exe
+        # Giu cua so console (khong --noconsole) de user thay duoc Token.
+        run: pyinstaller --onefile --name cad-bridge bridge.py
+
+      - name: Release exe
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: cad-bridge v1.0.0
+          files: dist/cad-bridge.exe
