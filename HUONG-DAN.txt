@@ -1,0 +1,72 @@
+CẦU NỐI AUTOCAD — TẦNG 2 (KẾT NỐI TRỰC TIẾP, OFFLINE TRÊN MÁY ANH)
+Phiên bản 1.0 — AutoCAD 2022 — Ngày làm: 23/11/2026
+
+CẦU NỐI NÀY LÀM GÌ
+------------------
+Một chương trình nhỏ chạy trên máy tính của anh. Nó nói chuyện trực tiếp với
+AutoCAD đang mở trên máy anh, và trả lời các câu hỏi của tôi qua mạng riêng
+Tailscale (chỉ máy anh với máy tôi thấy nhau, không đưa dữ liệu lên cloud).
+Nhờ đó tôi có thể, ngay trong lúc anh đang mở bản vẽ:
+  - Đọc tên bản vẽ đang mở, liệt kê đối tượng, layer
+  - Tính diện tích + chu vi đường bao kín (như lệnh DIENTICH, nhưng trực tiếp)
+  - Chạy mã LISP, gửi lệnh cho AutoCAD
+  - Vẽ thêm đối tượng (đường thẳng, polyline, tròn, chữ) vào bản vẽ đang mở
+
+CHUẨN BỊ (CHỈ LÀM 1 LẦN)
+------------------------
+1. Cài Python (nếu máy chưa có):
+   - Vào https://www.python.org/downloads/ , tải bản mới nhất, cài đặt.
+   - Khi cài NHỚ TICK ô "Add python.exe to PATH" ở màn hình đầu tiên.
+   - Kiểm tra: mở cmd gõ  py --version  (phải hiện Python 3.x)
+2. Cài Tailscale trên máy này:
+   - Vào https://tailscale.com/download , tải bản Windows, cài đặt, đăng nhập
+     bằng tài khoản của anh (tài khoản nào cũng được, miễn là 1 tài khoản).
+   - Sau khi đăng nhập, Tailscale hiện tên máy, ví dụ: DESKTOP-ABC123
+     (ghi lại tên này để gửi cho tôi).
+3. Mở AutoCAD 2022 và mở 1 bản vẽ bất kỳ.
+
+CHẠY CẦU NỐI
+-------------
+1. Giải nén file zip này ra 1 thư mục, ví dụ: C:\cad-bridge
+2. Chạy file run.bat (bấm đúp). Lần đầu nó tự cài thêm 2 thư viện nhỏ
+   (pyautocad, comtypes) — cần mạng lúc này, chỉ 1 lần.
+3. Nếu Windows Firewall hỏi, bấm "Allow access".
+4. Cửa sổ đen hiện lên, trong đó có 1 dòng Token, ví dụ:
+     Token (giu kin, chi gui cho Muse): aB3dEf9...
+   Token này cũng được lưu trong file token.txt cùng thư mục.
+5. Cứ để cửa sổ đó mở trong lúc dùng. Đóng cửa sổ là cầu nối dừng.
+
+BÁO CHO TÔI 2 THỨ (NHẮN TRONG CHAT)
+------------------------------------
+1. Token ở cửa sổ cầu nối (copy nguyên dòng).
+2. Tên máy Tailscale (ví dụ DESKTOP-ABC123).
+Sau đó tôi sẽ bấm kết nối (anh sẽ thấy 1 link phê duyệt — bấm đồng ý),
+tôi kiểm tra thử đọc tên bản vẽ + đếm đối tượng, rồi báo lại anh.
+
+BẢO MẬT
+-------
+- Cầu nối chỉ nhận lệnh khi có đúng Token. Đừng gửi Token cho ai khác ngoài tôi.
+- Muốn đổi Token: xóa file token.txt rồi chạy lại run.bat, Token mới sẽ sinh ra.
+- Cầu nối chỉ nghe trong mạng Tailscale và mạng LAN nhà anh, không mở ra internet.
+
+KHẮC PHỤC NHANH
+---------------
+- "Khong ket noi duoc AutoCAD dang chay": mở AutoCAD 2022 trước, mở 1 bản vẽ,
+  rồi thử lại (cầu nối không tự mở AutoCAD).
+- "Cai pyautocad that bai": kiểm tra mạng, chạy lại run.bat.
+- "Khong thay Python": cài lại Python và nhớ tick "Add python.exe to PATH".
+- Lệnh vẽ / tính diện tích báo lỗi: kiểm tra AutoCAD có đang mở hộp thoại nào
+  không (hộp thoại mở sẽ chặn lệnh) — đóng hộp thoại rồi thử lại.
+- Muốn dừng hẳn: đóng cửa sổ cầu nối.
+
+GIỚI HẠN BẢN 1.0 (NÓI THẲNG)
+----------------------------
+- Chưa chạy thử trên AutoCAD thật — code COM đã đối chiếu đúng hàm trong
+  pyautocad 0.2.0 và tài liệu Autodesk, tầng HTTP đã kiểm thử bằng bản giả lập,
+  nhưng lần kết nối thật đầu tiên vẫn cần thử cùng anh để sửa nếu lệch.
+- LISP chạy qua VisualLISP ActiveX (VL.Application); nếu máy anh thiếu thành
+  phần này thì cầu nối tự chuyển sang cách dự phòng (gửi lệnh + file tạm),
+  chậm hơn một chút.
+- Chu vi ellipse chưa lấy được qua COM (AutoCAD không cho sẵn) — diện tích
+  ellipse vẫn có, chu vi để trống.
+- Cầu nối chỉ làm việc khi AutoCAD đang mở và không bị hộp thoại chặn.
